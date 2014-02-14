@@ -30,5 +30,5 @@ Run from GitHub repository:
 * To clean all artifacts including the locally stored images, run `make clean`
 
 [blog-post]: blog
-[github-repo]: https://github.com/lukaspustina/docker-repository
+[github-repo]: https://github.com/lukaspustina/docker-registry
 
