@@ -10,14 +10,11 @@ all:
 	@echo "make stop-registry -- stops registry"
 	@echo "make clean -- removes containers, images, and downloads"
 
-registry: config.yml docker-registry
+registry: config.yml
 	docker build -rm -t lukaspustina/$@ .
 
 config.yml:
 	cat $@.template | sed "s/@@SEC_KEY@@/`openssl rand -hex 32`/" > $@
-
-docker-registry:
-	git clone https://github.com/dotcloud/docker-registry.git $@
 
 start-registry: docker-registry-storage
 	docker run --name registry -d -e FLAVOR=$(FLAVOR) -p 5000:5000 -v `pwd`/registry/docker-registry-storage:/docker-registry-storage lukaspustina/registry

@@ -5,19 +5,17 @@ FROM stackbrew/ubuntu
 
 MAINTAINER Lukas Pustina <lukas.pustina@centerdevice.com>
 
-ADD docker-registry /docker-registry
+RUN apt-get update; apt-get install -y git-core build-essential python-dev libevent1-dev python-openssl liblzma-dev wget; rm /var/lib/apt/lists/*_*
+
+RUN cd /tmp; wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py
+RUN cd /tmp; python ez_setup.py; easy_install pip; rm ez_setup.py
+RUN git clone https://github.com/dotcloud/docker-registry.git /docker-registry
+RUN cd /docker-registry && pip install -r requirements.txt
+
 ADD config.yml /etc/docker/
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV FLAVOR demo
-
-RUN apt-get update
-RUN apt-get install -y git-core build-essential python-dev libevent1-dev python-openssl liblzma-dev wget; rm /var/lib/apt/lists/*_*
-RUN cd /tmp; wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py
-RUN cd /tmp; python ez_setup.py; easy_install pip; rm ez_setup.py
-
-RUN cd /docker-registry && pip install -r requirements.txt
-
 VOLUME /docker-registry-storage
 EXPOSE 5000
 
