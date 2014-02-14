@@ -19,5 +19,5 @@ ENV FLAVOR local
 VOLUME /docker-registry-storage
 EXPOSE 5000
 
-CMD cd /docker-registry; SETTINGS_FLAVOR=$FLAVOR DOCKER_REGISTRY_CONFIG=/etc/docker/config.yml gunicorn -k gevent -b localhost:5000 --max-requests 100 --graceful-timeout 3600 -t 3600 -w 8 wsgi:application
+CMD cd /docker-registry; SETTINGS_FLAVOR=$FLAVOR DOCKER_REGISTRY_CONFIG=/etc/docker/config.yml gunicorn -k gevent -b 0.0.0.0:5000 --max-requests 100 --graceful-timeout 3600 -t 3600 -w 8 wsgi:application
 
