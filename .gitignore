@@ -1,0 +1,4 @@
+.vagrant
+docker-registry
+docker-registry-storage
+
