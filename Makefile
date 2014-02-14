@@ -1,4 +1,4 @@
-FLAVOR=demo
+FLAVOR=local
 
 .PHONY: registry run-registry python-2 python-3 pull run-python-2 run-python-3
 
@@ -27,10 +27,7 @@ stop-registry:
 	docker kill registry
 	docker rm registry
 
-clean: clean-downloads clean-registry-storage
-
-clean-downloads:
-	-@rm -rf docker-registry
+clean: clean-registry-storage
 
 clean-registry-storage:
 	-@rm -rf docker-registry-storage

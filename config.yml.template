@@ -16,6 +16,6 @@ prod:
         storage: s3
         storage_path: /prod
 
-demo:
+local:
         storage: local
         storage_path: /docker-registry-storage

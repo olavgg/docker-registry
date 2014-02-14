@@ -15,7 +15,7 @@ RUN cd /docker-registry && pip install -r requirements.txt
 ADD config.yml /etc/docker/
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV FLAVOR demo
+ENV FLAVOR local
 VOLUME /docker-registry-storage
 EXPOSE 5000
 
