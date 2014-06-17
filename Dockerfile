@@ -6,7 +6,7 @@
 
 MAINTAINER Olav Grønås Gjerde <olav@backupbay.com>
 
-FROM backupbay/debian:jessie
+FROM olavgg/docker-debian-jessie
 
 # Set the version you want of docker registry
 ENV REGISTRY_VERSION master
