@@ -40,6 +40,7 @@ run pip install file:///docker-registry#egg=docker-registry[bugsnag]
 ENV DOCKER_REGISTRY_CONFIG /etc/docker/config.yml
 ENV SETTINGS_FLAVOR local
 
+VOLUME /docker-registry-storage
 expose 5000
 
 CMD gunicorn -k gevent -b 0.0.0.0:5000 --max-requests 100 --graceful-timeout 3600\
