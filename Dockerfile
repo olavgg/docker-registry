@@ -1,23 +1,47 @@
-# Dockerfile for Docker Registry
-# derived from https://github.com/dotcloud/docker-registry/blob/master/Dockerfile
-# Version 1.0
-FROM stackbrew/ubuntu
+# VERSION 0.1
+# AUTHOR:         Olav Grønås Gjerde <olav@backupbay.com>
+# DESCRIPTION:    Image with docker-registry project and dependecies
+# TO_BUILD:       docker build -rm -t registry .
+# TO_RUN:         docker run --rm -p 5000:5000 registry
 
-MAINTAINER Lukas Pustina <lukas.pustina@centerdevice.com>
+MAINTAINER Olav Grønås Gjerde <olav@backupbay.com>
 
-RUN apt-get update; apt-get install -y git-core build-essential python-dev libevent1-dev python-openssl liblzma-dev wget; rm /var/lib/apt/lists/*_*
+FROM backupbay/debian:jessie
 
-RUN cd /tmp; wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py
-RUN cd /tmp; python ez_setup.py; easy_install pip; rm ez_setup.py
-RUN git clone https://github.com/dotcloud/docker-registry.git /docker-registry
-RUN cd /docker-registry && pip install -r requirements.txt
+# Set the version you want of docker registry
+ENV REGISTRY_VERSION master
+
+# Update
+RUN apt-get update
+RUN apt-get -y upgrade
+
+# Install software
+RUN apt-get -y install python-pip wget unzip python-dev\
+  liblzma-dev libevent-dev
+
+# Install the master branch of docker-registry
+RUN wget \
+  https://github.com/dotcloud/docker-registry/archive/$REGISTRY_VERSION.zip\
+  -O docker-registry.zip
+RUN unzip docker-registry.zip
+RUN mv docker-registry-$REGISTRY_VERSION docker-registry
+RUN rm docker-registry.zip
 
 ADD config.yml /etc/docker/
 
-ENV DEBIAN_FRONTEND noninteractive
-ENV FLAVOR local
-VOLUME /docker-registry-storage
-EXPOSE 5000
+RUN cd docker-registry; cp config/boto.cfg /etc/boto.cfg
 
-CMD cd /docker-registry; SETTINGS_FLAVOR=$FLAVOR DOCKER_REGISTRY_CONFIG=/etc/docker/config.yml gunicorn -k gevent -b 0.0.0.0:5000 --max-requests 100 --graceful-timeout 3600 -t 3600 -w 8 wsgi:application
+# Install core
+run pip install docker-registry/depends/docker-registry-core
+
+# Install registry
+run pip install file:///docker-registry#egg=docker-registry[bugsnag]
+
+ENV DOCKER_REGISTRY_CONFIG /etc/docker/config.yml
+ENV SETTINGS_FLAVOR local
+
+expose 5000
+
+CMD gunicorn -k gevent -b 0.0.0.0:5000 --max-requests 100 --graceful-timeout 3600\
+        -t 3600 -w 8 docker_registry.wsgi:application
 
