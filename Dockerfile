@@ -4,9 +4,8 @@
 # TO_BUILD:       docker build -rm -t registry .
 # TO_RUN:         docker run --rm -p 5000:5000 registry
 
-MAINTAINER Olav Grønås Gjerde <olav@backupbay.com>
-
 FROM olavgg/docker-debian-jessie
+MAINTAINER Olav Grønås Gjerde <olav@backupbay.com>
 
 # Set the version you want of docker registry
 ENV REGISTRY_VERSION master
