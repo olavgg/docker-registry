@@ -16,7 +16,7 @@ RUN apt-get -y upgrade
 
 # Install software
 RUN apt-get -y install python-pip wget unzip python-dev\
-  liblzma-dev libevent-dev
+  liblzma-dev libevent-dev nginx
 
 # Install the master branch of docker-registry
 RUN wget \
@@ -27,7 +27,13 @@ RUN mv docker-registry-$REGISTRY_VERSION docker-registry
 RUN rm docker-registry.zip
 
 ADD config.yml /etc/docker/
+ADD generate_ssl_key.sh /usr/local/bin/
+ADD registry.conf /etc/nginx/sites-available/
+RUN ln -s /etc/nginx/sites-available/registry.conf /etc/nginx/sites-enabled/registry.conf
 
+RUN /usr/local/bin/generate_ssl_key.sh
+RUN mv cert.pem /etc/ssl/certs/
+RUN mv key.pem /etc/ssl/private/
 RUN cd docker-registry; cp config/boto.cfg /etc/boto.cfg
 
 # Install core
@@ -40,8 +46,12 @@ ENV DOCKER_REGISTRY_CONFIG /etc/docker/config.yml
 ENV SETTINGS_FLAVOR local
 
 VOLUME /docker-registry-storage
-expose 5000
+
+EXPOSE 5000
+EXPOSE 80
+EXPOSE 443
 
 CMD gunicorn -k gevent -b 0.0.0.0:5000 --max-requests 100 --graceful-timeout 3600\
-        -t 3600 -w 8 docker_registry.wsgi:application
+        -t 3600 -w 8 docker_registry.wsgi:application --daemon \
+	&& service nginx start && /bin/sh
 
